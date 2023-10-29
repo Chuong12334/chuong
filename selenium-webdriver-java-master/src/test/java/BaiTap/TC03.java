@@ -2,18 +2,15 @@ package BaiTap;
 
 import driver.driverFactory;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
-import org.testng.AssertJUnit;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
 import java.io.File;
-
-import static org.testng.AssertJUnit.assertEquals;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /*
 
@@ -42,55 +39,76 @@ public class TC03 {
         int scc = 0;
 
         StringBuffer verificationError = new StringBuffer();
-        //int web driver session
+        /* Init web driver session */
         WebDriver driver = driverFactory.getChromeDriver();
         try {
             //Step 1. Go to http://live.techpanda.org/
-            driver.get("http://live.techpanda.org/");
+            driver.get("http://live.techpanda.org");
+            Thread.sleep(1000);
 
             //Step 2. Click on MOBILE menu
             driver.findElement(By.linkText("MOBILE")).click();
-            //timing
-            Thread.sleep(2000);
+            Thread.sleep(1000);
 
-            //Step 3. In the list of all mobile , click on ADD TO CART for Sony Xperia mobile
-            String XPeriaPrice = driver.findElement(By.cssSelector("#product-price-1 > span.price")).getText();
-            System.out.println(XPeriaPrice);
-            //timing
-            Thread.sleep(2000);
+            //Step 3. Click on "ADD TO CART" for Sony Xperia mobile
+            driver.findElement(By.xpath("(//button[@title='Add to Cart'])[2]")).click();
+            Thread.sleep(1000);
 
-            //Step 4. Change QTY value to 1000 and click UPDATE button. Expected that an error is displayed
-            WebElement Qty = driver.findElement(By.name("input[title='Qty']"));
-            Qty.clear();
-            Qty.sendKeys("1000");
-            WebElement updateButton = driver.findElement(By.name("span[shub-ins='1']"));
-            updateButton.click();
-            //timing
-            Thread.sleep(2000);
+            //Step 4. Change "QTY" value to 1000 and click "UPDATE" button
+            WebElement qtyInput = driver.findElement(By.xpath("(//input[@title='Qty'])[1]"));
+            qtyInput.clear();
+            qtyInput.sendKeys("1000");
+            driver.findElement(By.cssSelector("button[title='Update']")).click();
+            Thread.sleep(1000);
 
             //Step 5. Verify the error message
-            String errorMessage = driver.findElement(By.cssSelector(".item-msg.error")).getText();
-            System.out.println("Error Message: " + errorMessage);
-            //timing
-            Thread.sleep(2000);
+            WebElement errorElement = driver.findElement(By.xpath("(//span[contains(text(),'Some of the products cannot be ordered in requeste')])[1]"));
+            if (errorElement.isDisplayed()) {
+                System.out.println("Error message displayed: " + errorElement.getText());
+                captureScreenshot(driver, "error_screenshot");
+            } else {
+                verificationError.append("Error message is not displayed. ");
+            }
+            Thread.sleep(1000);
 
-            //Step 6. Then click on EMPTY CAR T link in the footer of list of all mobiles. A message "SHOPPING CART IS EMPTY" is shown.
-            WebElement emptyCartLink = driver.findElement(By.linkText("span[shub-ins='1']"));
-            emptyCartLink.click();
-            //timing
-            Thread.sleep(2000);
+            //Step 6. Click on "EMPTY CART" link in the footer of list of all mobiles
+            driver.findElement(By.xpath("(//span[contains(text(),'Empty Cart')])[1]")).click();
+            Thread.sleep(1000);
 
             //Step 7. Verify cart is empty
-            scc = (scc + 1);
+            WebElement emptyCartMessage = driver.findElement(By.xpath("(//h1[normalize-space()='Shopping Cart is Empty'])[1]"));
+            if (emptyCartMessage.isDisplayed()) {
+                System.out.println("Shopping cart is empty message displayed.");
+                captureScreenshot(driver, "empty_cart_screenshot");
+            } else {
+                verificationError.append("Shopping cart is not empty. ");
+            }
+            Thread.sleep(1000);
 
-            File scrFile2 = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-            String png2 = ("" + scc + ".png");
-            FileUtils.copyFile(scrFile, new File(png));
-        }catch (Exception e){
+            //Check for any verification errors
+            if (verificationError.length() > 0) {
+                throw new AssertionError("Test case failed: " + verificationError.toString());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // End
+            driver.quit();
+        }
+    }
+
+    private static void captureScreenshot(WebDriver driver, String screenshotName) {
+        TakesScreenshot ts = (TakesScreenshot) driver;
+        File source = ts.getScreenshotAs(OutputType.FILE);
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String screenshotFileName = screenshotName + "_" + timeStamp + ".png";
+        File destination = new File(System.getProperty("user.dir") + "/screenshots/" + screenshotFileName);
+        try {
+            FileUtils.copyFile(source, destination);
+            System.out.println("Screenshot saved: " + screenshotFileName);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // end
-            driver.quit();
     }
 }
