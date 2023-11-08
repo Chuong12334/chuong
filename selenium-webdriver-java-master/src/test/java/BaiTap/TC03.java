@@ -12,56 +12,36 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/*
-
-Test Steps
-
-1. Go to http://live.techpanda.org/
-
-2. Click on MOBILE menu
-
-3. In the list of all mobile , click on ADD TO CART for Sony Xperia mobile
-
-4. Change QTY value to 1000 and click UPDATE button. Expected that an error is displayed
-
-"The requested quantity for "Sony Xperia" is not available.
-
-5. Verify the error message
-
-6. Then click on EMPTY CART link in the footer of list of all mobiles. A message "SHOPPING CART IS EMPTY" is shown.
-
-7. Verify cart is empty
-
-*/
-@Test
 public class TC03 {
-    public static void testTC03() {
+    @Test
+    public static void testTc03() {
         int scc = 0;
+        String testCaseName = "Test03";
 
         StringBuffer verificationError = new StringBuffer();
-        /* Init web driver session */
+        // Init web driver session
         WebDriver driver = driverFactory.getChromeDriver();
         try {
-            //Step 1. Go to http://live.techpanda.org/
+            // Bước 1. Go to http://live.techpanda.org/
             driver.get("http://live.techpanda.org");
             Thread.sleep(1000);
 
-            //Step 2. Click on MOBILE menu
+            // Bước 2. Click on MOBILE menu
             driver.findElement(By.linkText("MOBILE")).click();
             Thread.sleep(1000);
 
-            //Step 3. Click on "ADD TO CART" for Sony Xperia mobile
+            // Bước 3. Click on "ADD TO CART" for Sony Xperia mobile
             driver.findElement(By.xpath("(//button[@title='Add to Cart'])[2]")).click();
             Thread.sleep(1000);
 
-            //Step 4. Change "QTY" value to 1000 and click "UPDATE" button
+            // Bước 4. Change "QTY" value to 1000 and click "UPDATE" button
             WebElement qtyInput = driver.findElement(By.xpath("(//input[@title='Qty'])[1]"));
             qtyInput.clear();
             qtyInput.sendKeys("1000");
             driver.findElement(By.cssSelector("button[title='Update']")).click();
             Thread.sleep(1000);
 
-            //Step 5. Verify the error message
+            // Bước 5. Verify the error message
             WebElement errorElement = driver.findElement(By.xpath("(//span[contains(text(),'Some of the products cannot be ordered in requeste')])[1]"));
             if (errorElement.isDisplayed()) {
                 System.out.println("Error message displayed: " + errorElement.getText());
@@ -71,11 +51,11 @@ public class TC03 {
             }
             Thread.sleep(1000);
 
-            //Step 6. Click on "EMPTY CART" link in the footer of list of all mobiles
+            // Bước 6. Click on "EMPTY CART" link in the footer of list of all mobiles
             driver.findElement(By.xpath("(//span[contains(text(),'Empty Cart')])[1]")).click();
             Thread.sleep(1000);
 
-            //Step 7. Verify cart is empty
+            // Bước 7. Verify cart is empty
             WebElement emptyCartMessage = driver.findElement(By.xpath("(//h1[normalize-space()='Shopping Cart is Empty'])[1]"));
             if (emptyCartMessage.isDisplayed()) {
                 System.out.println("Shopping cart is empty message displayed.");
@@ -85,7 +65,7 @@ public class TC03 {
             }
             Thread.sleep(1000);
 
-            //Check for any verification errors
+            // Check for any verification errors
             if (verificationError.length() > 0) {
                 throw new AssertionError("Test case failed: " + verificationError.toString());
             }

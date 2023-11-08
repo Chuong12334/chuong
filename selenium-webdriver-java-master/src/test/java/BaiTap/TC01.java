@@ -12,34 +12,20 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 
-/*
-
-Test Steps
-
-Step 1. Go to http://live.techpanda.org/
-
-Step 2. Verify Title of the page
-
-Step 3. Click on -> MOBILE -> menu
-
-Step 4. In the list of all mobile , select SORT BY -> dropdown as name
-
-Step 5. Verify all products are sorted by name
-
-*/
 @Test
 public class TC01 {
     public static void testTC01() {
         int scc = 0;
+        String testCaseName = "Test01"; // Tên test case
 
         StringBuffer verificationError = new StringBuffer();
-        //int web driver session
+        // init web driver session
         WebDriver driver = driverFactory.getChromeDriver();
         try {
-            //Step 1. Go to http://live.techpanda.org/
+            // Bước 1. Go to http://live.techpanda.org/
             driver.get("http://live.techpanda.org/");
 
-            //Step 2. Verify Title of the page
+            // Bước 2. Verify Title of the page
             String demoSite = driver.findElement(By.cssSelector("h2")).getText();
             System.out.println(demoSite);
 
@@ -48,34 +34,35 @@ public class TC01 {
             } catch (Error e) {
                 verificationError.append(e.toString());
             }
-            //timing
-            Thread.sleep(2000);
 
-            //Step 3. Click on -> MOBILE -> menu
+            // timing
+            Thread.sleep(1000);
+
+            // Bước 3. Click on -> MOBILE -> menu
             driver.findElement(By.linkText("MOBILE")).click();
-            //timing
-            Thread.sleep(2000);
+            // timing
+            Thread.sleep(1000);
 
-            //Step 4. In the list of all mobile , select SORT BY -> dropdown as name
+            // Bước 4. In the list of all mobile, select SORT BY -> dropdown as name
             new Select(driver.findElement(By.cssSelector("select[title=\"Sort By\"]"))).selectByVisibleText("Name");
-            //timming
-            Thread.sleep(2000);
 
-            //Step 5. Verify all products are sorted by name
+            // timing
+            Thread.sleep(1000);
+
+            // Bước 5. Verify all products are sorted by name
             scc = (scc + 1);
 
+            // Đặt tên cho file ảnh png dựa trên tên của test case
+            String png = (testCaseName + ".png");
 
-            File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-
-            String png = ("" + scc + ".png");
+            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
             FileUtils.copyFile(scrFile, new File(png));
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         // End
         driver.quit();
-
     }
 }

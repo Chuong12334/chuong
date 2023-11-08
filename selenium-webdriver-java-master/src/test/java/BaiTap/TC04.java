@@ -11,45 +11,27 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/*
-
-Test Steps
-
-1. Go to http://live.techpanda.org/
-
-2. Click on �MOBILE� menu
-
-3. In mobile products list , click on �Add To Compare� for 2 mobiles (Sony Xperia & Iphone)
-
-4. Click on �COMPARE� button. A popup window opens
-
-5. Verify the pop-up window and check that the products are reflected in it
-
-Heading "COMPARE PRODUCTS" with selected products in it.
-
-6. Close the Popup Windows
-
-*/
-@Test
 public class TC04 {
-    public static void testTC04() {
+    @Test
+    public static void testTc04() {
         int scc = 0;
+        String testCaseName = "Test04";
 
-        //Init web driver session
+        // Init web driver session
         WebDriver driver = driverFactory.getChromeDriver();
 
         try {
-            //Step 1. Go to http://live.techpanda.org/
+            // Bước 1. Go to http://live.techpanda.org/
             driver.get("http://live.techpanda.org");
             Thread.sleep(1000);
 
-            //Step 2. Click on MOBILE menu
+            // Bước 2. Click on MOBILE menu
             driver.findElement(By.linkText("MOBILE")).click();
 
             // Timing
             Thread.sleep(1000);
 
-            //Step 3. In mobile products list, click on "Add To Compare" for Sony Xperia & iPhone
+            // Bước 3. In mobile products list, click on "Add To Compare" for Sony Xperia & iPhone
             WebElement sonyXperiaCompare = driver.findElement(By.xpath("(//a[@class='link-compare'][normalize-space()='Add to Compare'])[2]"));
             sonyXperiaCompare.click();
 
@@ -58,10 +40,10 @@ public class TC04 {
 
             Thread.sleep(1000);
 
-            //Step 4. Click on "COMPARE" button. A popup window opens
+            // Bước 4. Click on "COMPARE" button. A popup window opens
             driver.findElement(By.xpath("(//span[contains(text(),'Compare')])[2]")).click();
 
-            //Chuyển tới cửa sổ popup
+            // Chuyển tới cửa sổ popup
             String parentWindowHandle = driver.getWindowHandle();
             for (String windowHandle : driver.getWindowHandles()) {
                 if (!windowHandle.equals(parentWindowHandle)) {
@@ -71,7 +53,7 @@ public class TC04 {
             }
             Thread.sleep(1000);
 
-            //Step 5. Verify the pop-up window and check that the products are reflected in it
+            // Bước 5. Verify the pop-up window and check that the products are reflected in it
             WebElement popupHeading = driver.findElement(By.xpath("(//h1[normalize-space()='Compare Products'])[1]"));
             if (popupHeading.isDisplayed()) {
                 System.out.println("Popup window opened with heading: " + popupHeading.getText());
@@ -92,16 +74,16 @@ public class TC04 {
 
             Thread.sleep(1000);
 
-            //Step 6. Close the Popup Window
+            // Bước 6. Close the Popup Window
             driver.close();
 
-            //Chuyển lại cửa sổ gốc
+            // Chuyển lại cửa sổ gốc
             driver.switchTo().window(parentWindowHandle);
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            //End
+            // End
             driver.quit();
         }
     }

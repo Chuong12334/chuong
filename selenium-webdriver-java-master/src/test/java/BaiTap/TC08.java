@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -15,34 +16,28 @@ import java.io.File;
 import static org.openqa.selenium.OutputType.FILE;
 
 @Test
-public class TC06 {
+public class TC08 {
 
-    public static void testTC06() {
+    public static void testTC08() {
 
         String emailAddress = "nhom6@gmail.com";
         String password = "123456";
         String zip = "5000";
-        String address="New Address";
-        String firstName ="Group";
-        String lastName ="Six";
-        String address1 ="NVH";
-        String city ="HCM";
-        String state ="Florida";
-        String country ="United States";
-        String telephone ="1234567890";
-        String company ="HCM";
+        String qty = "10";
 
         //init web driver session
         WebDriver driver = driverFactory.getChromeDriver();
         try {
+            CheckOutPage checkoutPage = new CheckOutPage(driver);
             CartPage cartPage = new CartPage(driver);
-            //Go to http://live.techpanda.org/
+
+            //Step1: Go to http://live.techpanda.org/
             driver.get("http://live.techpanda.org/");
 
             //timing
             Thread.sleep(2000);
 
-            //Click on my account link
+            //Step2: Click on my account link
             LoginPage loginPage = new LoginPage(driver);
             loginPage.clickMyAccountLink();
 
@@ -54,7 +49,7 @@ public class TC06 {
             //timing
             Thread.sleep(2000);
 
-            //Login in application using previously created credential
+            //Step 3: Login in application using previously created credential
             loginPage.enterEmail(emailAddress);
 
             //timing
@@ -65,7 +60,7 @@ public class TC06 {
             //timing
             Thread.sleep(1000);
 
-            //Click Login
+            //Step 4: Click Login
             loginPage.clickLogin();
 
             // switching to new window
@@ -76,15 +71,17 @@ public class TC06 {
             //timing
             Thread.sleep(2000);
 
-            //Click on MY WISHLIST link
-            cartPage.clickMyWishList();
+            //Step 4: Click on 'REORDER' link , change QTY & click Update
 
+            cartPage.clickReOrder();
+            Thread.sleep(2000);
+
+            cartPage.qtyEnter(qty);
             //timing
             Thread.sleep(2000);
 
-            //In next page, Click ADD TO CART link
+            cartPage.clickUpdateQty();
 
-            cartPage.clickAddToCart();
 
             //timing
             Thread.sleep(2000);
@@ -110,15 +107,16 @@ public class TC06 {
 
             //Verify Shipping cost generated
 
-            //Step 8. Verify Shipping cost generated
-            cartPage.verifyShippingCost("Fixed - " + cartPage.flatRateMoneyCheck());
 
+            //Step 8. Verify Shipping cost generated
+            String expectedShippingCostText = "Fixed - " + cartPage.flatRateMoneyCheck();
+            cartPage.verifyShippingCost(expectedShippingCostText);
             Thread.sleep(2000);
             //Screenshot
             File scrFile = ((TakesScreenshot)driver).getScreenshotAs(FILE);
-            String png = ("C:\\Users\\Libra\\Downloads\\Video\\chuong\\selenium-webdriver-java-master\\screenshots\\" + "TC06" + "_1.png");
+            String png = ("C:\\Users\\Libra\\Downloads\\Video\\chuong\\selenium-webdriver-java-master\\screenshots\\" + "TC08" + "_1.png");
             FileUtils.copyFile(scrFile, new File(png));
-
+//
             //Select Shipping Cost, Update Total
             cartPage.clickFlatRate();
 
@@ -130,68 +128,57 @@ public class TC06 {
             //timing
             Thread.sleep(2000);
 
-            //Step10. Verify shipping cost is added to total
+            //Step5. Verify Grand Total is changed
+
             cartPage.verifyGrandTotal();
 
 
             //Screenshot
             scrFile = ((TakesScreenshot)driver).getScreenshotAs(FILE);
-            png = ("C:\\Users\\Libra\\Downloads\\Video\\chuong\\selenium-webdriver-java-master\\screenshots\\" + "TC06" + "_2.png");
+            png = ("C:\\Users\\Libra\\Downloads\\Video\\chuong\\selenium-webdriver-java-master\\screenshots\\" + "TC08" + "_2.png");
             FileUtils.copyFile(scrFile, new File(png));
             Thread.sleep(2000);
 
-            //Step11. Click "Proceed to Checkout"
-            cartPage.clickProcedCheckOut();
+            // Click "Proceed to Checkout"
+            cartPage.clickCheckoutButton();
             Thread.sleep(2000);
             for (String handle : driver.getWindowHandles()) {
                 driver.switchTo().window(handle);
             }
 
 
-            //Step12a. Enter Billing Information, and click Continue
-            CheckOutPage checkoutPage = new CheckOutPage(driver);
-            checkoutPage.differenceAddressClick();
-            Thread.sleep(2000);
-            checkoutPage.selectAddress(address);
+            //Step6. Complete Billing & Shipping Information
             Thread.sleep(4000);
-            //Step12b. Enter Shipping Information, and click Continue
-            checkoutPage.enterFirstName(firstName);
-            checkoutPage.enterLastName(lastName);
-            checkoutPage.enterCompany(company);
-            checkoutPage.enterAddress1(address1);
-            checkoutPage.enterCity(city);
-            checkoutPage.selectState(state);
-            checkoutPage.enterZip(zip);
-            checkoutPage.selectCountry(country);
-            checkoutPage.enterTelephone(telephone);
+            checkoutPage.clickUseDifferentAddress();
             Thread.sleep(4000);
             checkoutPage.clickBillingButton();
             Thread.sleep(4000);
             checkoutPage.clickSaveShippingInformation();
-            Thread.sleep(2000);
-
-            //Step13. In Shipping Method, Click Continue
+            Thread.sleep(4000);
             checkoutPage.clickSaveShippingMethod();
             Thread.sleep(4000);
-
-            //Step14. In Payment Information select 'Check/Money Order' radio button. Click Continue
             checkoutPage.selectPaymentMethod();
+            Thread.sleep(4000);
             checkoutPage.clickPaymentButton();
             Thread.sleep(4000);
-
-            //Step15. Click 'PLACE ORDER' button
             checkoutPage.clickPlaceOrder();
-            Thread.sleep(3000);
+            Thread.sleep(2000);
 
-            //Step16. Verify Oder is generated. Note the order number
+            Thread.sleep(2000);
+
+            //Step7. Verify order is generated and note the order number
             checkoutPage.verifyOrder();
+            Thread.sleep(2000);
+
+
 
             Thread.sleep(2000);
             scrFile = ((TakesScreenshot)driver).getScreenshotAs(FILE);
-            png = ("C:\\Users\\Libra\\Downloads\\Video\\chuong\\selenium-webdriver-java-master\\screenshots\\" + "TC06" + "_3.png");
+            png = ("C:\\Users\\Libra\\Downloads\\Video\\chuong\\selenium-webdriver-java-master\\screenshots\\" + "TC08" + "_3.png");
             FileUtils.copyFile(scrFile, new File(png));
-            Thread.sleep(2000);
+
             checkoutPage.orderNumber();
+            Thread.sleep(2000);
 
         } catch (Exception e){
             e.printStackTrace();
